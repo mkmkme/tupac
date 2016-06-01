@@ -38,10 +38,19 @@ int CLexer::GetToken()
 	if (isdigit(m_LastChar) || m_LastChar == '.') {
 		// Collecting number from a string
 		std::string numstr;
-		do {
+		bool dotfound = (m_LastChar == '.');
+		while (true) {
 			numstr += m_LastChar;
 			m_LastChar = getchar();
-		} while (isdigit(m_LastChar) || m_LastChar == '.');
+			if (m_LastChar == '.') {
+				if (dotfound)
+					return tError;
+				else
+					dotfound = true;
+			}
+			else if (!isdigit(m_LastChar))
+				break;
+		}
 		// Trying to convert and returning number type
 		m_NumValue = strtod(numstr.c_str(), nullptr);
 		return tNumber;

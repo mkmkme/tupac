@@ -6,7 +6,8 @@ enum Token {
 	tDef		= -2,
 	tExtern		= -3,
 	tIdentifier	= -4,
-	tNumber		= -5
+	tNumber		= -5,
+	tError		= -6
 };
 
 #endif // TOKEN_HPP

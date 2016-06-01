@@ -20,6 +20,7 @@ class CParser
 	static std::map<char, int> m_BinOpPrecedence;
 public:
 	CParser(CLexer& l) : m_CurrentToken(' '), m_Lexer(l) {}
+	inline int GetCurrentToken() const { return m_CurrentToken; }
 	inline int GetNextToken() { return m_CurrentToken = m_Lexer.GetToken(); }
 	int GetTokenPrecedence() const;
 

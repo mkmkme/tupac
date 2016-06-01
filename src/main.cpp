@@ -1,9 +1,9 @@
-#include <iostream>
+#include "MainWorker.hpp"
 
-using namespace std;
 
 int main(int argc, char *argv[])
 {
-	cout << "Hello World!" << endl;
+	CMainWorker mw;
+	mw.MainLoop();
 	return 0;
 }

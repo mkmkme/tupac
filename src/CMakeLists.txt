@@ -3,10 +3,12 @@ add_subdirectory(lexer)
 add_subdirectory(parser)
 set(SOURCES
 	${SOURCES}
+	${CMAKE_CURRENT_SOURCE_DIR}/MainWorker.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
 	PARENT_SCOPE
 )
 set(HEADERS
 	${HEADERS}
+	${CMAKE_CURRENT_SOURCE_DIR}/MainWorker.hpp
 	PARENT_SCOPE
 )
