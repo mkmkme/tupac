@@ -3,8 +3,8 @@
 
 enum Token {
 	tEOF		= -1,
-	tDEF		= -2,
-	tEXTERN		= -3,
+	tDef		= -2,
+	tExtern		= -3,
 	tIdentifier	= -4,
 	tNumber		= -5
 };

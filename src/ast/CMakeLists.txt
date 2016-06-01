@@ -5,5 +5,12 @@ set(SOURCES
 
 set(HEADERS
 	${HEADERS}
+	${CMAKE_CURRENT_SOURCE_DIR}/exprast.hpp
+	${CMAKE_CURRENT_SOURCE_DIR}/numexprast.hpp
+	${CMAKE_CURRENT_SOURCE_DIR}/varexprast.hpp
+	${CMAKE_CURRENT_SOURCE_DIR}/binexprast.hpp
+	${CMAKE_CURRENT_SOURCE_DIR}/callexprast.hpp
+	${CMAKE_CURRENT_SOURCE_DIR}/prototypeast.hpp
+	${CMAKE_CURRENT_SOURCE_DIR}/functionast.hpp
 	PARENT_SCOPE
 )
