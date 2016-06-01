@@ -2,8 +2,12 @@
 #define PARSER_HPP
 
 #include "../lexer/lexer.hpp"
+#include "../ast/exprast.hpp"
+#include "../ast/functionast.hpp"
+#include "../ast/prototypeast.hpp"
 
 #include <map>
+#include <memory>
 
 class CParser
 {
@@ -13,11 +17,32 @@ class CParser
 	CLexer& m_Lexer;
 
 	// Map for bin operation precedence
-	static const std::map<char, int> m_BinOpPrecedence;
+	static std::map<char, int> m_BinOpPrecedence;
 public:
 	CParser(CLexer& l) : m_CurrentToken(' '), m_Lexer(l) {}
 	inline int GetNextToken() { return m_CurrentToken = m_Lexer.GetToken(); }
 	int GetTokenPrecedence() const;
+
+	// Parsing functions
+	std::unique_ptr<CExprAST> ParseExpression();
+	std::unique_ptr<CExprAST> ParseNumber();
+	std::unique_ptr<CExprAST> ParseParenExpr();
+	std::unique_ptr<CExprAST> ParseIdentifierExpr();
+	std::unique_ptr<CExprAST> ParsePrimary();
+	std::unique_ptr<CExprAST> ParseBinOpRHS(int precedence, std::unique_ptr<CExprAST> lhs);
+
+	std::unique_ptr<CPrototypeAST> ParsePrototype();
+	std::unique_ptr<CFunctionAST> ParseDefinition();
+	std::unique_ptr<CFunctionAST> ParseTopLevelExpr();
+	std::unique_ptr<CPrototypeAST> ParseExtern();
+
 };
+
+template<class T = CExprAST>
+std::unique_ptr<T> LogError(const char *s)
+{
+	fprintf(stderr, "Parser error: %s\n", s);
+	return nullptr;
+}
 
 #endif // PARSER_HPP

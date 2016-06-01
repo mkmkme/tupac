@@ -14,6 +14,8 @@ public:
 	virtual ~CLexer() {}
 
 	int GetToken();
+	inline double GetNumVal() const { return m_NumValue; }
+	inline std::string GetIdStr() const { return m_IdentifierStr; }
 };
 
 #endif  // LEXER_HPP
