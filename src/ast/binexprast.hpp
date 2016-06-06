@@ -18,6 +18,8 @@ public:
 	m_Operation(op),
 	m_LHS(std::move(l)),
 	m_RHS(std::move(r)) {}
+
+	virtual llvm::Value *codegen() override;
 };
 
 #endif	// BINEXPRAST_HPP

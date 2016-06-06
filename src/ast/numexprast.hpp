@@ -9,6 +9,7 @@ class CNumberExprAST : public CExprAST
 	double m_Value;
 public:
 	CNumberExprAST(double v) : m_Value(v) {}
+	virtual llvm::Value *codegen() override;
 };
 
 #endif

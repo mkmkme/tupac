@@ -11,6 +11,7 @@ class CVariableExprAST : public CExprAST
 	std::string m_Name;
 public:
 	CVariableExprAST(const std::string& s) : m_Name(s) {}
+	virtual llvm::Value *codegen() override;
 };
 
 #endif

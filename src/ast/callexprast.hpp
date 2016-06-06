@@ -18,6 +18,8 @@ public:
 				 std::vector<std::unique_ptr<CExprAST>> a) :
 	m_Callee(c),
 	m_Args(std::move(a)) {}
+
+	virtual llvm::Value *codegen() override;
 };
 
 #endif	// CALLEXPRAST_HPP
