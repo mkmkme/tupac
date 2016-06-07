@@ -1,49 +1,74 @@
 #include "MainWorker.hpp"
 
+#include "lexer/lexer.hpp"
+#include "lexer/token.hpp"
+#include "parser/parser.hpp"
+
 #include <cstdio>
 
 CMainWorker::CMainWorker() :
-m_Lexer(),
-m_Parser(m_Lexer)
+tupac()
 {
 	fprintf(stderr, "ready> ");
-	m_Parser.GetNextToken();
+	tupac.Parser().GetNextToken();
 }
 
 void CMainWorker::HandleDefinition()
 {
-	if (m_Parser.ParseDefinition())
-		fprintf(stderr, "Parsed a function definition\n");
-	else
-		m_Parser.GetNextToken(); // Skip token for error recovery
+	auto fast = tupac.Parser().ParseDefinition();
+	if (!fast) {
+		tupac.Parser().GetNextToken(); // Skip token for error recovery
+		return;
+	}
+
+	auto* fir = fast->codegen();
+	if (fir) {
+		fprintf(stderr, "Read function definition: ");
+		fir->dump();
+	}
 }
 
 void CMainWorker::HandleExtern()
 {
-	if (m_Parser.ParseExtern())
-		fprintf(stderr, "Parsed an extern\n");
-	else
-		m_Parser.GetNextToken();
+	auto past = tupac.Parser().ParseExtern();
+	if (!past) {
+		tupac.Parser().GetNextToken();
+		return;
+	}
+	printf("Read extern named %s\n", past->Name().c_str());
+
+	auto* fir = past->codegen();
+	if (fir) {
+		fprintf(stderr, "Read extern: ");
+		fir->dump();
+	}
 }
 
 void CMainWorker::HandleTopLevelExpr()
 {
-	if (m_Parser.ParseTopLevelExpr())
-		fprintf(stderr, "Parsed a top-level expression\n");
-	else
-		m_Parser.GetNextToken();
+	auto fast = tupac.Parser().ParseTopLevelExpr();
+	if (!fast) {
+		tupac.Parser().GetNextToken();
+		return;
+	}
+
+	auto* fir = fast->codegen();
+	if (fir) {
+		fprintf(stderr, "Read top-level expression: ");
+		fir->dump();
+	}
 }
 
 void CMainWorker::MainLoop()
 {
 	while (true) {
 		fprintf(stderr, "ready> ");
-		int t = m_Parser.GetCurrentToken();
+		int t = tupac.Parser().GetCurrentToken();
 		switch (t) {
 		case tEOF:
 			return;
 		case ';':
-			m_Parser.GetNextToken();
+			tupac.Parser().GetNextToken();
 			break;
 		case tDef:
 			HandleDefinition();

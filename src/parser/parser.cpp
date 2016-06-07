@@ -5,6 +5,9 @@
 #include "../ast/numexprast.hpp"
 #include "../ast/varexprast.hpp"
 
+#include <cstdint>
+#include <sstream>
+
 std::map<char, int> CParser::m_BinOpPrecedence = {
 	{ '<', 10 },
 //	{ '>', 10 },
@@ -12,6 +15,14 @@ std::map<char, int> CParser::m_BinOpPrecedence = {
 	{ '-', 20 },
 	{ '*', 40 }
 };
+
+CParser::CParser(CLexer &l) :
+m_CurrentToken(' '),
+m_Lexer(l),
+m_TopLevelExprNumber(0)
+{
+
+}
 
 int CParser::GetTokenPrecedence() const
 {
@@ -182,7 +193,10 @@ std::unique_ptr<CFunctionAST> CParser::ParseTopLevelExpr()
 		return nullptr;
 
 	// Make an anonymous prototype
-	auto p = std::make_unique<CPrototypeAST>("__anon_expr", std::vector<std::string>());
+	std::stringstream ss;
+	ss << "__anon_expr_";
+	ss << m_TopLevelExprNumber++;
+	auto p = std::make_unique<CPrototypeAST>(ss.str().c_str(), std::vector<std::string>());
 	return std::make_unique<CFunctionAST>(std::move(p), std::move(e));
 }
 

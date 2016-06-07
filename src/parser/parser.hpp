@@ -15,11 +15,13 @@ class CParser
 	int m_CurrentToken;
 	// Reference to a lexer (providing GetToken)
 	CLexer& m_Lexer;
+	// Current number of top-level expression
+	uint64_t m_TopLevelExprNumber;
 
 	// Map for bin operation precedence
 	static std::map<char, int> m_BinOpPrecedence;
 public:
-	CParser(CLexer& l) : m_CurrentToken(' '), m_Lexer(l) {}
+	CParser(CLexer& l);
 	inline int GetCurrentToken() const { return m_CurrentToken; }
 	inline int GetNextToken() { return m_CurrentToken = m_Lexer.GetToken(); }
 	int GetTokenPrecedence() const;

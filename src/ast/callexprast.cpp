@@ -8,9 +8,13 @@ llvm::Value* CCallExprAST::codegen()
 		return LogErrorCodegen("Unrecognized function referenced");
 
 	// Check for argument mismatch
-	if (callee->arg_size() != m_Args.size())
-		return LogErrorCodegen("Function '%s' takes %u args (%u given)",
-							   m_Callee.c_str(), m_Args.size(), callee->arg_size());
+	if (callee->arg_size() != m_Args.size()) {
+		size_t argsize = callee->arg_size();
+		const char *argstring = argsize == 1 ? "arg" : "args";
+		return LogErrorCodegen("Function '%s' takes %u %s (%u given)",
+							   m_Callee.c_str(), argsize,
+							   argstring, m_Args.size());
+	}
 
 	std::vector<llvm::Value*> args;
 	for (auto& a : m_Args) {
@@ -18,6 +22,7 @@ llvm::Value* CCallExprAST::codegen()
 		if (!args.back())
 			return nullptr;
 	}
+
 
 	return m_IR.Builder().CreateCall(callee, args, "calltmp");
 }

@@ -1,17 +1,18 @@
 #ifndef MAINWORKER_HPP
 #define MAINWORKER_HPP
 
-#include "lexer/lexer.hpp"
-#include "lexer/token.hpp"
-#include "parser/parser.hpp"
+
+
+#include "Globals.hpp"
 
 class CMainWorker
 {
-	CLexer m_Lexer;
-	CParser m_Parser;
+	CGlobals tupac;
 
 public:
 	CMainWorker();
+
+	inline CGlobals& Tupac() { return tupac; }
 
 	void HandleDefinition();
 	void HandleExtern();

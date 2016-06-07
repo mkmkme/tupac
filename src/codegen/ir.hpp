@@ -12,14 +12,14 @@
 
 class CIR
 {
-	std::unique_ptr<llvm::Module> m_Module;
 	llvm::LLVMContext m_Context;
+	std::unique_ptr<llvm::Module> m_Module;
 	llvm::IRBuilder<> m_Builder;
 	std::map<std::string, llvm::Value*> m_NamedValues;
 
 public:
 	CIR() :
-	m_Module(nullptr),
+	m_Module(llvm::make_unique<llvm::Module>("my hot jit", m_Context)),
 	m_Builder(m_Context) {}
 
 	inline std::map<std::string, llvm::Value*>& NamedValues()
