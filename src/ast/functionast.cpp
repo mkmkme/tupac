@@ -33,6 +33,9 @@ llvm::Function *CFunctionAST::codegen()
 		// Validate the generated code, checking for consistency
 		llvm::verifyFunction(*f);
 
+		// Optimize function
+		m_IR.Passes().FPM()->run(*f);
+
 		return f;
 	}
 

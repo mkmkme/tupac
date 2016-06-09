@@ -32,7 +32,7 @@ public:
 	m_Module(llvm::make_unique<llvm::Module>("my hot jit", m_Context)),
 	m_Builder(m_Context),
 	m_FPM(std::make_unique<FunctionPassManager>(m_Module.get())),
-	m_Passes(m_Context, m_Module.get(), m_FPM.get(), m_JIT)
+	m_Passes(m_Context, m_Module, m_FPM, m_JIT)
 	{}
 
 	inline std::map<std::string, llvm::Value*>& NamedValues()
@@ -53,6 +53,11 @@ public:
 	inline std::unique_ptr<llvm::Module>& Module()
 	{
 		return m_Module;
+	}
+
+	inline COptPasses& Passes()
+	{
+		return m_Passes;
 	}
 
 };
