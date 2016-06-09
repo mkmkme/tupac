@@ -2,8 +2,6 @@
 
 #include <llvm/IR/Verifier.h>
 
-#include <iostream>
-
 llvm::Function *CFunctionAST::codegen()
 {
 	// Check for an existing function from a previous 'extern' declaration
