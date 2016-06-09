@@ -1,6 +1,7 @@
 add_subdirectory(ast)
 add_subdirectory(codegen)
 add_subdirectory(lexer)
+add_subdirectory(optimization)
 add_subdirectory(parser)
 set(SOURCES
 	${SOURCES}

@@ -1,0 +1,11 @@
+set(SOURCES
+	${SOURCES}
+	${CMAKE_CURRENT_SOURCE_DIR}/optpasses.cpp
+	PARENT_SCOPE
+)
+
+set(HEADERS
+	${HEADERS}
+	${CMAKE_CURRENT_SOURCE_DIR}/optpasses.hpp
+	PARENT_SCOPE
+)
