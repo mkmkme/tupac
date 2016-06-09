@@ -7,6 +7,8 @@
 #include <llvm/IR/LegacyPassManager.h>
 #include <llvm/IR/Module.h>
 
+class CKaleidoscopeJIT;
+
 using llvm::legacy::FunctionPassManager;
 class COptPasses
 {
@@ -17,7 +19,8 @@ class COptPasses
 public:
 	COptPasses(llvm::LLVMContext& c,
 			   llvm::Module* m,
-			   FunctionPassManager* f);
+			   FunctionPassManager* f,
+			   CKaleidoscopeJIT& jit);
 };
 
 #endif

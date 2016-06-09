@@ -4,12 +4,14 @@
 class CIR;
 class CLexer;
 class CParser;
+class CKaleidoscopeJIT;
 
 class CGlobals
 {
 	static CIR m_IR;
 	static CLexer m_Lexer;
 	static CParser m_Parser;
+	static CKaleidoscopeJIT m_JIT;
 public:
 	CGlobals()
 	{}

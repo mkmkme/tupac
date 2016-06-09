@@ -25,6 +25,8 @@ public:
 
 	CKaleidoscopeJIT();
 
+	inline llvm::TargetMachine& TargetMachine() { return *m_TM; }
+
 	llvm::Module& AddModule(llvm::Module&& m);
 	void RemoveModule(llvm::Module&& m);
 	llvm::Module* FindSymbol(const std::string& s);

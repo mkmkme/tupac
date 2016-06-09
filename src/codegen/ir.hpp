@@ -2,6 +2,7 @@
 #define IR_HPP
 
 #include "../optimization/optpasses.hpp"
+#include "kaleidoscopejit.hpp"
 
 #include <cstdio>
 #include <map>
@@ -22,6 +23,8 @@ class CIR
 
 	std::unique_ptr<FunctionPassManager> m_FPM;
 
+	CKaleidoscopeJIT m_JIT;
+
 	COptPasses m_Passes;
 
 public:
@@ -29,7 +32,7 @@ public:
 	m_Module(llvm::make_unique<llvm::Module>("my hot jit", m_Context)),
 	m_Builder(m_Context),
 	m_FPM(std::make_unique<FunctionPassManager>(m_Module.get())),
-	m_Passes(m_Context, m_Module.get(), m_FPM.get())
+	m_Passes(m_Context, m_Module.get(), m_FPM.get(), m_JIT)
 	{}
 
 	inline std::map<std::string, llvm::Value*>& NamedValues()
