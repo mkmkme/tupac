@@ -53,8 +53,26 @@ void CMainWorker::HandleTopLevelExpr()
 
 	auto* fir = fast->codegen();
 	if (fir) {
-		fprintf(stderr, "Read top-level expression: ");
 		fir->dump();
+
+		CKaleidoscopeJIT& jit = CGlobals::IR().JIT();
+
+		// JIT the module containing the anonymous expression, keeping a
+		// handle so we can free it later
+		auto h = jit.AddModule(CGlobals::IR().MoveModule());
+		CGlobals::IR().BuildPassManager();
+
+		// Search the JIT for the __anon_expr symbol
+		auto s = jit.FindSymbol("__anon_expr");
+		assert(s && "Function not found!");
+
+		// Get the symbol's address and cast it to the right type
+		// double(). Then we can call it as a native function
+		double (*fp)() = (double(*)())(intptr_t)s.getAddress();
+		fprintf(stderr, "Result is: %f\n", fp());
+
+		// Delete the anonymous expression module from JIT
+		jit.RemoveModule(h);
 	}
 }
 

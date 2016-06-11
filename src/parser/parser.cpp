@@ -192,11 +192,14 @@ std::unique_ptr<CFunctionAST> CParser::ParseTopLevelExpr()
 	if (!e)
 		return nullptr;
 
+#if 0
 	// Make an anonymous prototype
 	std::stringstream ss;
 	ss << "__anon_expr_";
 	ss << m_TopLevelExprNumber++;
-	auto p = std::make_unique<CPrototypeAST>(ss.str().c_str(), std::vector<std::string>());
+	std::string s = ss.str();
+#endif
+	auto p = std::make_unique<CPrototypeAST>("__anon_expr", std::vector<std::string>());
 	return std::make_unique<CFunctionAST>(std::move(p), std::move(e));
 }
 

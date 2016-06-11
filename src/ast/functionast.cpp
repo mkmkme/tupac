@@ -34,7 +34,7 @@ llvm::Function *CFunctionAST::codegen()
 		llvm::verifyFunction(*f);
 
 		// Optimize function
-		m_IR.Passes().FPM().run(*f);
+		m_IR.FPM().run(*f);
 
 		return f;
 	}

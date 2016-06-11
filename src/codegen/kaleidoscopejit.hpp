@@ -24,15 +24,21 @@ class CKaleidoscopeJIT
 	std::unique_ptr<ObjLayer_t> m_OL;
 	// Compile Layer
 	std::unique_ptr<CompileLayer_t> m_CL;
+	// Module Handles
+	std::vector<ModuleHandle_t> m_ModuleHandles;
 public:
-	void Init();
 	CKaleidoscopeJIT();
+	void Init();
 
-//	inline llvm::TargetMachine& TargetMachine() { return *m_TM; }
+	inline llvm::TargetMachine& TargetMachine() { return *m_TM; }
 
-	llvm::Module& AddModule(llvm::Module&& m);
-	void RemoveModule(llvm::Module&& m);
-	llvm::Module* FindSymbol(const std::string& s);
+	ModuleHandle_t AddModule(std::unique_ptr<llvm::Module> m);
+	void RemoveModule(ModuleHandle_t h);
+	llvm::orc::JITSymbol FindSymbol(const std::string& s);
+private:
+	std::string Mangle(std::string name);
+	template <typename T> static std::vector<T> SingletonSet(T t);
+	llvm::orc::JITSymbol FindMangledSymbol(const std::string& name);
 };
 
 #endif

@@ -16,6 +16,7 @@ int main(int argc, char *argv[])
 	llvm::InitializeNativeTargetAsmParser();
 	llvm::InitializeNativeTargetAsmPrinter();
 	CGlobals::IR().JIT().Init();
+	CGlobals::IR().BuildPassManager();
 
 	CMainWorker mw;
 	mw.MainLoop();

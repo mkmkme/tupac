@@ -1,7 +1,6 @@
 #ifndef IR_HPP
 #define IR_HPP
 
-#include "../optimization/optpasses.hpp"
 #include "kaleidoscopejit.hpp"
 
 #include <cstdio>
@@ -10,6 +9,7 @@
 #include <string>
 
 #include <llvm/IR/IRBuilder.h>
+#include <llvm/IR/LegacyPassManager.h>
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/Module.h>
 
@@ -23,7 +23,6 @@ class CIR
 
 	std::unique_ptr<FunctionPassManager> m_FPM;
 	std::unique_ptr<CKaleidoscopeJIT> m_JIT;
-	std::unique_ptr<COptPasses> m_Passes;
 
 public:
 	CIR();
@@ -31,9 +30,11 @@ public:
 	inline auto& NamedValues() { return m_NamedValues; }
 	inline llvm::LLVMContext& Context() { return m_Context; }
 	inline llvm::IRBuilder<>& Builder() { return m_Builder; }
-	inline std::unique_ptr<llvm::Module>& Module() { return m_Module; }
+	inline llvm::Module* Module() { return m_Module.get(); }
+	inline std::unique_ptr<llvm::Module> MoveModule() { return std::move(m_Module); }
+	inline FunctionPassManager& FPM() { return *m_FPM; }
 	inline CKaleidoscopeJIT& JIT() { return *m_JIT; }
-	inline COptPasses& Passes() { return *m_Passes; }
+	void BuildPassManager();
 
 };
 

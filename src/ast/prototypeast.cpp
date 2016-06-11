@@ -12,7 +12,7 @@ llvm::Function *CPrototypeAST::codegen()
 	auto* ft = llvm::FunctionType::get(doublety, doubles, false);
 
 	auto* f = llvm::Function::Create(ft, llvm::Function::ExternalLinkage,
-									 m_Name, m_IR.Module().get());
+									 m_Name, m_IR.Module());
 
 	// Set names for all args
 	size_t idx = 0;
