@@ -2,6 +2,7 @@
 
 #include "codegen/ir.hpp"
 #include "codegen/kaleidoscopejit.hpp"
+#include "modules/print.hpp"
 #include "Globals.hpp"
 
 #include <memory>

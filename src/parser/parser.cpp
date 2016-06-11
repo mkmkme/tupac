@@ -2,6 +2,8 @@
 
 #include "../ast/binexprast.hpp"
 #include "../ast/callexprast.hpp"
+#include "../ast/forexprast.hpp"
+#include "../ast/ifexprast.hpp"
 #include "../ast/numexprast.hpp"
 #include "../ast/varexprast.hpp"
 
@@ -69,6 +71,88 @@ std::unique_ptr<CExprAST> CParser::ParseParenExpr()
 	return r;
 }
 
+std::unique_ptr<CExprAST> CParser::ParseIfExpr()
+{
+	GetNextToken(); // eating 'if'
+
+	// Condition
+	auto cond_ = ParseExpression();
+	if (!cond_)
+		return nullptr;
+
+	if (m_CurrentToken != tThen)
+		return LogError("Expecting then");
+
+	GetNextToken(); // eating 'then'
+
+	auto then_ = ParseExpression();
+	if (!then_)
+		return nullptr;
+
+	if (m_CurrentToken != tElse)
+		return LogError("Expecting else");
+
+	GetNextToken(); // eating 'else'
+
+	auto else_ = ParseExpression();
+	if (!else_)
+		return nullptr;
+
+	return std::make_unique<CIfExprAST>(std::move(cond_),
+					    std::move(then_),
+					    std::move(else_));
+}
+
+std::unique_ptr<CExprAST> CParser::ParseForExpr()
+{
+	GetNextToken(); // eating 'for'
+
+	if (m_CurrentToken != tIdentifier)
+		return LogError("Expecting identifier after 'for'");
+
+	std::string id = m_Lexer.GetIdStr();
+	GetNextToken(); // eating identifier
+
+	if (m_CurrentToken != '=')
+		return LogError("Expecting '=' after identifier");
+	GetNextToken(); // eating '='
+
+	auto start = ParseExpression();
+	if (!start)
+		return nullptr;
+
+	if (m_CurrentToken != ',')
+		return LogError("Expecting ',' after start value in 'for'");
+	GetNextToken(); // eating ','
+
+	auto end = ParseExpression();
+	if (!end)
+		return nullptr;
+
+	// Step value is optional
+	std::unique_ptr<CExprAST> step;
+	if (m_CurrentToken == ',') {
+		GetNextToken();
+		step = ParseExpression();
+		if (!step)
+			return nullptr;
+	}
+
+	if (m_CurrentToken != tIn)
+		return LogError("Expecting 'in' after 'for'");
+	GetNextToken(); // eating 'in'
+
+	auto body = ParseExpression();
+	if (!body)
+		return nullptr;
+
+	return std::make_unique<CForExprAST>(id,
+					     std::move(start),
+					     std::move(end),
+					     std::move(step),
+					     std::move(body));
+}
+
 std::unique_ptr<CExprAST> CParser::ParseIdentifierExpr()
 {
 	std::string id = m_Lexer.GetIdStr();
@@ -114,6 +198,10 @@ std::unique_ptr<CExprAST> CParser::ParsePrimary()
 		return ParseNumber();
 	case '(':
 		return ParseParenExpr();
+	case tIf:
+		return ParseIfExpr();
+	case tFor:
+		return ParseForExpr();
 	}
 }
 

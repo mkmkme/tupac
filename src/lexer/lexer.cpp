@@ -9,7 +9,13 @@ m_IdentifierStr(),
 m_NumValue(0.),
 m_LastChar(' ')
 {
-
+	m_Tokens["def"]		= tDef;
+	m_Tokens["extern"]	= tExtern;
+	m_Tokens["if"]		= tIf;
+	m_Tokens["then"]	= tThen;
+	m_Tokens["else"]	= tElse;
+	m_Tokens["for"]		= tFor;
+	m_Tokens["in"]		= tIn;
 }
 
 int CLexer::GetToken()
@@ -26,10 +32,9 @@ int CLexer::GetToken()
 			m_IdentifierStr += m_LastChar;
 
 		// Recognizing if it s one of the keywords
-		if (m_IdentifierStr == "def")
-			return tDef;
-		if (m_IdentifierStr == "extern")
-			return tExtern;
+		auto it = m_Tokens.find(m_IdentifierStr);
+		if (it != m_Tokens.end())
+			return it->second;
 		// Otherwise just returning identifier type
 		return tIdentifier;
 	}

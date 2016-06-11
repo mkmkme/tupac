@@ -30,6 +30,8 @@ public:
 	std::unique_ptr<CExprAST> ParseExpression();
 	std::unique_ptr<CExprAST> ParseNumber();
 	std::unique_ptr<CExprAST> ParseParenExpr();
+	std::unique_ptr<CExprAST> ParseIfExpr();
+	std::unique_ptr<CExprAST> ParseForExpr();
 	std::unique_ptr<CExprAST> ParseIdentifierExpr();
 	std::unique_ptr<CExprAST> ParsePrimary();
 	std::unique_ptr<CExprAST> ParseBinOpRHS(int precedence, std::unique_ptr<CExprAST> lhs);
