@@ -6,18 +6,17 @@
 
 #include <cstdio>
 
-CMainWorker::CMainWorker() :
-tupac()
+CMainWorker::CMainWorker()
 {
 	fprintf(stderr, "ready> ");
-	tupac.Parser().GetNextToken();
+	CGlobals::Parser().GetNextToken();
 }
 
 void CMainWorker::HandleDefinition()
 {
-	auto fast = tupac.Parser().ParseDefinition();
+	auto fast = CGlobals::Parser().ParseDefinition();
 	if (!fast) {
-		tupac.Parser().GetNextToken(); // Skip token for error recovery
+		CGlobals::Parser().GetNextToken(); // Skip token for error recovery
 		return;
 	}
 
@@ -30,9 +29,9 @@ void CMainWorker::HandleDefinition()
 
 void CMainWorker::HandleExtern()
 {
-	auto past = tupac.Parser().ParseExtern();
+	auto past = CGlobals::Parser().ParseExtern();
 	if (!past) {
-		tupac.Parser().GetNextToken();
+		CGlobals::Parser().GetNextToken();
 		return;
 	}
 	printf("Read extern named %s\n", past->Name().c_str());
@@ -46,9 +45,9 @@ void CMainWorker::HandleExtern()
 
 void CMainWorker::HandleTopLevelExpr()
 {
-	auto fast = tupac.Parser().ParseTopLevelExpr();
+	auto fast = CGlobals::Parser().ParseTopLevelExpr();
 	if (!fast) {
-		tupac.Parser().GetNextToken();
+		CGlobals::Parser().GetNextToken();
 		return;
 	}
 
@@ -63,12 +62,12 @@ void CMainWorker::MainLoop()
 {
 	while (true) {
 		fprintf(stderr, "ready> ");
-		int t = tupac.Parser().GetCurrentToken();
+		int t = CGlobals::Parser().GetCurrentToken();
 		switch (t) {
 		case tEOF:
 			return;
 		case ';':
-			tupac.Parser().GetNextToken();
+			CGlobals::Parser().GetNextToken();
 			break;
 		case tDef:
 			HandleDefinition();

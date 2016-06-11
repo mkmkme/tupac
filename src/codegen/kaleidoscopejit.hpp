@@ -12,20 +12,23 @@
 
 class CKaleidoscopeJIT
 {
-	// Target Machine
-	std::unique_ptr<llvm::TargetMachine> m_TM;
-	// Data Layout
-	const llvm::DataLayout m_DL;
-	// Object Layer
-	llvm::orc::ObjectLinkingLayer<> m_OL;
-	// Compile Layer
-	llvm::orc::IRCompileLayer<decltype(m_OL)> m_CL;
-public:
-	typedef decltype(m_CL)::ModuleSetHandleT ModuleHandle_t;
+	typedef llvm::orc::ObjectLinkingLayer<> ObjLayer_t;
+	typedef llvm::orc::IRCompileLayer<ObjLayer_t> CompileLayer_t;
+	typedef CompileLayer_t::ModuleSetHandleT ModuleHandle_t;
 
+	// Target Machine
+	llvm::TargetMachine* m_TM;
+	// Data Layout
+	std::unique_ptr<llvm::DataLayout> m_DL;
+	// Object Layer
+	std::unique_ptr<ObjLayer_t> m_OL;
+	// Compile Layer
+	std::unique_ptr<CompileLayer_t> m_CL;
+public:
+	void Init();
 	CKaleidoscopeJIT();
 
-	inline llvm::TargetMachine& TargetMachine() { return *m_TM; }
+//	inline llvm::TargetMachine& TargetMachine() { return *m_TM; }
 
 	llvm::Module& AddModule(llvm::Module&& m);
 	void RemoveModule(llvm::Module&& m);

@@ -8,6 +8,7 @@
 class IAbstractAST
 {
 protected:
+
 	CIR& m_IR;
 public:
 	IAbstractAST() : m_IR(CGlobals::IR()) {}

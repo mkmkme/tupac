@@ -22,43 +22,18 @@ class CIR
 	std::map<std::string, llvm::Value*> m_NamedValues;
 
 	std::unique_ptr<FunctionPassManager> m_FPM;
-
-	CKaleidoscopeJIT m_JIT;
-
-	COptPasses m_Passes;
+	std::unique_ptr<CKaleidoscopeJIT> m_JIT;
+	std::unique_ptr<COptPasses> m_Passes;
 
 public:
-	CIR() :
-	m_Module(llvm::make_unique<llvm::Module>("my hot jit", m_Context)),
-	m_Builder(m_Context),
-	m_FPM(std::make_unique<FunctionPassManager>(m_Module.get())),
-	m_Passes(m_Context, m_Module, m_FPM, m_JIT)
-	{}
+	CIR();
 
-	inline std::map<std::string, llvm::Value*>& NamedValues()
-	{
-		return m_NamedValues;
-	}
-
-	inline llvm::LLVMContext& Context()
-	{
-		return m_Context;
-	}
-
-	inline llvm::IRBuilder<>& Builder()
-	{
-		return m_Builder;
-	}
-
-	inline std::unique_ptr<llvm::Module>& Module()
-	{
-		return m_Module;
-	}
-
-	inline COptPasses& Passes()
-	{
-		return m_Passes;
-	}
+	inline auto NamedValues() { return m_NamedValues; }
+	inline llvm::LLVMContext& Context() { return m_Context; }
+	inline llvm::IRBuilder<>& Builder() { return m_Builder; }
+	inline std::unique_ptr<llvm::Module>& Module() { return m_Module; }
+	inline CKaleidoscopeJIT& JIT() { return *m_JIT; }
+	inline COptPasses& Passes() { return *m_Passes; }
 
 };
 
