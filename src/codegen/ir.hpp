@@ -28,7 +28,7 @@ class CIR
 public:
 	CIR();
 
-	inline auto NamedValues() { return m_NamedValues; }
+	inline auto& NamedValues() { return m_NamedValues; }
 	inline llvm::LLVMContext& Context() { return m_Context; }
 	inline llvm::IRBuilder<>& Builder() { return m_Builder; }
 	inline std::unique_ptr<llvm::Module>& Module() { return m_Module; }
