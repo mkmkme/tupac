@@ -4,17 +4,11 @@
 
 llvm::Function *CFunctionAST::codegen()
 {
-	// Check for an existing function from a previous 'extern' declaration
-	auto* f = m_IR.Module()->getFunction(m_Proto->Name());
-
-	if (!f)
-		f = m_Proto->codegen();
-
+	auto& p = *m_Proto;
+	m_IR.AddFunction(std::move(m_Proto));
+	llvm::Function* f = m_IR.GetFunction(p.Name());
 	if (!f)
 		return nullptr;
-
-	if (!f->empty())
-		return (llvm::Function*)LogErrorCodegen("Function cannot be redefined");
 
 	// Create a new basic block to start insertion into
 	auto* bb = llvm::BasicBlock::Create(m_IR.Context(), "entry", f);

@@ -1,6 +1,7 @@
 #include "ir.hpp"
 
 #include <llvm/Transforms/Scalar.h>
+#include "../ast/prototypeast.hpp"
 
 llvm::Value* LogErrorCodegen(const char *fmt, ...)
 {
@@ -40,5 +41,27 @@ void CIR::BuildPassManager()
 	m_FPM->add(llvm::createCFGSimplificationPass());
 
 	m_FPM->doInitialization();
+}
+
+llvm::Function *CIR::GetFunction(const std::string &name)
+{
+	// First, see if this function is already exists in this module
+	auto* f = m_Module->getFunction(name);
+	if (f)
+		return f;
+
+	// If not, check whether we can codegen for declaration from some
+	// existing prototype
+	auto fpi = m_FunctionPrototypes.find(name);
+	if (fpi != m_FunctionPrototypes.end())
+		return fpi->second->codegen();
+
+	// If no existing prototype exists, returning nothing
+	return nullptr;
+}
+
+void CIR::AddFunction(std::unique_ptr<CPrototypeAST>&& proto)
+{
+	m_FunctionPrototypes[proto.get()->Name()] = std::move(proto);
 }
 

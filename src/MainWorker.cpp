@@ -24,6 +24,8 @@ void CMainWorker::HandleDefinition()
 	if (fir) {
 		fprintf(stderr, "Read function definition: ");
 		fir->dump();
+		CGlobals::IR().JIT().AddModule(CGlobals::IR().MoveModule());
+		CGlobals::IR().BuildPassManager();
 	}
 }
 
@@ -40,6 +42,7 @@ void CMainWorker::HandleExtern()
 	if (fir) {
 		fprintf(stderr, "Read extern: ");
 		fir->dump();
+		CGlobals::IR().AddFunction(std::move(past));
 	}
 }
 

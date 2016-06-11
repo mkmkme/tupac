@@ -3,7 +3,7 @@
 llvm::Value* CCallExprAST::codegen()
 {
 	// Look up the name in the global module table
-	llvm::Function* callee = m_IR.Module()->getFunction(m_Callee);
+	llvm::Function* callee = m_IR.GetFunction(m_Callee);
 	if (!callee)
 		return LogErrorCodegen("Unrecognized function referenced");
 

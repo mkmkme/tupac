@@ -13,6 +13,8 @@
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/Module.h>
 
+class CPrototypeAST;
+
 using llvm::legacy::FunctionPassManager;
 class CIR
 {
@@ -20,6 +22,7 @@ class CIR
 	std::unique_ptr<llvm::Module> m_Module;
 	llvm::IRBuilder<> m_Builder;
 	std::map<std::string, llvm::Value*> m_NamedValues;
+	std::map<std::string, std::unique_ptr<CPrototypeAST>> m_FunctionPrototypes;
 
 	std::unique_ptr<FunctionPassManager> m_FPM;
 	std::unique_ptr<CKaleidoscopeJIT> m_JIT;
@@ -35,6 +38,9 @@ public:
 	inline FunctionPassManager& FPM() { return *m_FPM; }
 	inline CKaleidoscopeJIT& JIT() { return *m_JIT; }
 	void BuildPassManager();
+
+	llvm::Function* GetFunction(const std::string& name);
+	void AddFunction(std::unique_ptr<CPrototypeAST>&& proto);
 
 };
 
