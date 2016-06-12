@@ -19,7 +19,16 @@ llvm::Value* CBinaryExprAST::codegen()
 		return m_IR.Builder().CreateUIToFP(l, llvm::Type::getDoubleTy(m_IR.Context()),
 									  "booltmp");
 	default:
-		return LogErrorCodegen("Invalid binary operator");
+		break;
 	}
+
+	// If it wasn't a builtin binop, it can be user-defined. Emit a call for it then
+	llvm::Function* f = m_IR.GetFunction(std::string("binary") + m_Operation);
+
+	if (!f)
+		return LogErrorCodegen("Binary operator '%c' not found\n", m_Operation);
+
+	llvm::Value* ops[2] = { l, r };
+	return m_IR.Builder().CreateCall(f, ops, "binop");
 }
 

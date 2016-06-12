@@ -25,6 +25,7 @@ public:
 	inline int GetCurrentToken() const { return m_CurrentToken; }
 	inline int GetNextToken() { return m_CurrentToken = m_Lexer.GetToken(); }
 	int GetTokenPrecedence() const;
+	static inline std::map<char, int>& BinOpPrecedenceMap() { return m_BinOpPrecedence; }
 
 	// Parsing functions
 	std::unique_ptr<CExprAST> ParseExpression();
@@ -34,6 +35,7 @@ public:
 	std::unique_ptr<CExprAST> ParseForExpr();
 	std::unique_ptr<CExprAST> ParseIdentifierExpr();
 	std::unique_ptr<CExprAST> ParsePrimary();
+	std::unique_ptr<CExprAST> ParseUnary();
 	std::unique_ptr<CExprAST> ParseBinOpRHS(int precedence, std::unique_ptr<CExprAST> lhs);
 
 	std::unique_ptr<CPrototypeAST> ParsePrototype();

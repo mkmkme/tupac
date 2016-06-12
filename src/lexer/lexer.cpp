@@ -16,6 +16,8 @@ m_LastChar(' ')
 	m_Tokens["else"]	= tElse;
 	m_Tokens["for"]		= tFor;
 	m_Tokens["in"]		= tIn;
+	m_Tokens["binary"]	= tBinary;
+	m_Tokens["unary"]	= tUnary;
 }
 
 int CLexer::GetToken()

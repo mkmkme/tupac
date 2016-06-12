@@ -1,14 +1,21 @@
 #include "functionast.hpp"
+#include "../parser/parser.hpp"
 
 #include <llvm/IR/Verifier.h>
 
 llvm::Function *CFunctionAST::codegen()
 {
-	auto& p = *m_Proto;
+	// Transfer ownership of the prototype to the FunctionProtos map, but keep a
+	// reference to it for use below.
+	auto &p = *m_Proto;
 	m_IR.AddFunction(std::move(m_Proto));
 	llvm::Function* f = m_IR.GetFunction(p.Name());
 	if (!f)
 		return nullptr;
+
+	// If this is an operator, install it
+	if (p.IsBinaryOp())
+		CParser::BinOpPrecedenceMap()[p.GetOperatorName()] = p.GetBinaryPrecedence();
 
 	// Create a new basic block to start insertion into
 	auto* bb = llvm::BasicBlock::Create(m_IR.Context(), "entry", f);

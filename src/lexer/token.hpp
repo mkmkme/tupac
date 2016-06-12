@@ -12,7 +12,9 @@ enum Token {
 	tElse		= -8,
 	tFor		= -9,
 	tIn		= -10,
-	tError		= -11
+	tBinary		= -11,
+	tUnary		= -12,
+	tError		= -13
 };
 
 #endif // TOKEN_HPP
