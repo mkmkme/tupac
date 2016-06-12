@@ -23,8 +23,15 @@ llvm::Function *CFunctionAST::codegen()
 
 	// Record the function arguments in the map
 	m_IR.NamedValues().clear();
-	for (auto& a : f->args())
-		m_IR.NamedValues()[a.getName()] = &a;
+	for (auto& a : f->args()) {
+		llvm::AllocaInst* alloca = m_IR.CreateEntryBlockAlloca(f, a.getName());
+
+		// Store the initial value into the alloca
+		m_IR.Builder().CreateStore(&a, alloca);
+
+		// Add arguments to variable symbol table
+		m_IR.NamedValues()[a.getName()] = alloca;
+	}
 
 	auto* r = m_Body->codegen();
 	if (r) {

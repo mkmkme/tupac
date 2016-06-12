@@ -21,7 +21,7 @@ class CIR
 	llvm::LLVMContext m_Context;
 	std::unique_ptr<llvm::Module> m_Module;
 	llvm::IRBuilder<> m_Builder;
-	std::map<std::string, llvm::Value*> m_NamedValues;
+	std::map<std::string, llvm::AllocaInst*> m_NamedValues;
 	std::map<std::string, std::unique_ptr<CPrototypeAST>> m_FunctionPrototypes;
 
 	std::unique_ptr<FunctionPassManager> m_FPM;
@@ -38,6 +38,7 @@ public:
 	inline FunctionPassManager& FPM() { return *m_FPM; }
 	inline CKaleidoscopeJIT& JIT() { return *m_JIT; }
 	void BuildPassManager();
+	llvm::AllocaInst* CreateEntryBlockAlloca(llvm::Function* f, const std::string& n);
 
 	llvm::Function* GetFunction(const std::string& name);
 	void AddFunction(std::unique_ptr<CPrototypeAST>&& proto);

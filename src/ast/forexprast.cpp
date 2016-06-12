@@ -18,14 +18,21 @@
 
 llvm::Value *CForExprAST::codegen()
 {
+	// Make new basic block for the loop header, inserting after current
+	// block
+	llvm::Function* func = m_IR.Builder().GetInsertBlock()->getParent();
+	// Create an alloca for the var in entry block
+	llvm::AllocaInst* alloca = m_IR.CreateEntryBlockAlloca(func, m_VarName);
+
+	// Emit the 'start' code first, without 'var' in scope
 	llvm::Value* startv = m_Start->codegen();
 	if (!startv)
 		return nullptr;
 
-	// Make new basic block for the loop header, inserting after current
-	// block
-	llvm::Function* func = m_IR.Builder().GetInsertBlock()->getParent();
-	llvm::BasicBlock* preheaderbb = m_IR.Builder().GetInsertBlock();
+	// Store the var in alloca
+	m_IR.Builder().CreateStore(startv, alloca);
+
+	// Make the new basic block for the loop header, inserting after current block
 	llvm::BasicBlock* loopbb = llvm::BasicBlock::Create(m_IR.Context(),
 							    "loop",
 							    func);
@@ -36,16 +43,10 @@ llvm::Value *CForExprAST::codegen()
 	// Start insertion in loopbb
 	m_IR.Builder().SetInsertPoint(loopbb);
 
-	// Start the PHI node with an entry for start
-	llvm::PHINode* var = m_IR.Builder().CreatePHI(llvm::Type::getDoubleTy(m_IR.Context()),
-						      2,
-						      m_VarName.c_str());
-	var->addIncoming(startv, preheaderbb);
-
 	// Within the loop, the var is defined equal to the PHI node.
 	// If it shadows an existing var, we need to restore it, so save it now
-	llvm::Value* oldv = m_IR.NamedValues()[m_VarName];
-	m_IR.NamedValues()[m_VarName] = var;
+	llvm::AllocaInst* oldv = m_IR.NamedValues()[m_VarName];
+	m_IR.NamedValues()[m_VarName] = alloca;
 
 	// Emit the body of the loop. This, like any other expr, can change
 	// the current bb. Note that we ignore the value computed by the body,
@@ -64,12 +65,16 @@ llvm::Value *CForExprAST::codegen()
 		stepv = llvm::ConstantFP::get(m_IR.Context(), llvm::APFloat(1.));
 	}
 
-	llvm::Value* nextv = m_IR.Builder().CreateFAdd(var, stepv, "nextvar");
-
 	// Compute the end condition
 	llvm::Value* endv = m_End->codegen();
 	if (!endv)
 		return nullptr;
+
+	// Reload, increment and restore the alloca. This handles the case where
+	// the body of the loop mutates the var
+	llvm::Value* curv = m_IR.Builder().CreateLoad(alloca, m_VarName.c_str());
+	llvm::Value* nextv = m_IR.Builder().CreateFAdd(curv, stepv, "nextvar");
+	m_IR.Builder().CreateStore(nextv, alloca);
 
 	// Convert condition to bool using double
 	endv = m_IR.Builder().CreateFCmpONE(endv,
@@ -77,7 +82,6 @@ llvm::Value *CForExprAST::codegen()
 					    "loopcond");
 
 	// Create the "after loop" block and insert it
-	llvm::BasicBlock* loopendbb = m_IR.Builder().GetInsertBlock();
 	llvm::BasicBlock* afterbb = llvm::BasicBlock::Create(m_IR.Context(),
 							     "afterloop",
 							     func);
@@ -87,9 +91,6 @@ llvm::Value *CForExprAST::codegen()
 
 	// Any new code will be inserted in afterbb
 	m_IR.Builder().SetInsertPoint(afterbb);
-
-	// Add a new entry to the PHI node for the backedge
-	var->addIncoming(nextv, loopendbb);
 
 	// Restore the unshadowed variable
 	if (oldv)

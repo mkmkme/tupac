@@ -7,11 +7,13 @@
 #include "../ast/numexprast.hpp"
 #include "../ast/unaryexprast.hpp"
 #include "../ast/varexprast.hpp"
+#include "../ast/variableexprast.hpp"
 
 #include <cstdint>
 #include <sstream>
 
 std::map<char, int> CParser::m_BinOpPrecedence = {
+	{ '=', 2 },
 	{ '<', 10 },
 //	{ '>', 10 },
 	{ '+', 20 },
@@ -203,6 +205,8 @@ std::unique_ptr<CExprAST> CParser::ParsePrimary()
 		return ParseIfExpr();
 	case tFor:
 		return ParseForExpr();
+	case tVar:
+		return ParseVarExpr();
 	}
 }
 
@@ -220,6 +224,53 @@ std::unique_ptr<CExprAST> CParser::ParseUnary()
 		return std::make_unique<CUnaryExprAST>(opcode, std::move(operand));
 
 	return nullptr;
+}
+
+std::unique_ptr<CExprAST> CParser::ParseVarExpr()
+{
+	GetNextToken(); // eating 'var'
+
+	std::vector<std::pair<std::string, std::unique_ptr<CExprAST>>> varnames;
+
+	// At least one var name is required
+	if (m_CurrentToken != tIdentifier)
+		return LogError("Expected identifier after var");
+
+	while (true) {
+		std::string name = m_Lexer.GetIdStr();
+		GetNextToken(); // eating varname
+
+		// Read optional initializer
+		std::unique_ptr<CExprAST> init;
+		if (m_CurrentToken == '=') {
+			GetNextToken(); // eating '='
+
+			init = ParseExpression();
+			if (!init)
+				return nullptr;
+		}
+
+		varnames.push_back(std::make_pair(name, std::move(init)));
+
+		// If this is the end of the var list, exit loop
+		if (m_CurrentToken != ',')
+			break;
+		GetNextToken(); // eating ','
+
+		if (m_CurrentToken != tIdentifier)
+			return LogError("Expected identifier list after var");
+	}
+
+	// At this point, we have to have 'in'
+	if (m_CurrentToken != tIn)
+		return LogError("Expected 'in' after 'var'");
+	GetNextToken(); // eating 'in'
+
+	auto body = ParseExpression();
+	if (!body)
+		return nullptr;
+
+	return std::make_unique<CVarExprAST>(std::move(varnames), std::move(body));
 }
 
 std::unique_ptr<CExprAST> CParser::ParseBinOpRHS(int precedence, std::unique_ptr<CExprAST> lhs)

@@ -43,6 +43,16 @@ void CIR::BuildPassManager()
 	m_FPM->doInitialization();
 }
 
+//Create an alloca instruction in the entry block of the function
+llvm::AllocaInst *CIR::CreateEntryBlockAlloca(llvm::Function* f, const std::string& n)
+{
+	llvm::IRBuilder<> tmpb(&f->getEntryBlock(),
+			       f->getEntryBlock().begin());
+	return tmpb.CreateAlloca(llvm::Type::getDoubleTy(m_Context),
+				 0,
+				 n.c_str());
+}
+
 llvm::Function *CIR::GetFunction(const std::string &name)
 {
 	// First, see if this function is already exists in this module

@@ -3,15 +3,21 @@
 
 #include "exprast.hpp"
 
-#include <string>
+#include <memory>
 
-// Node class for variables
-class CVariableExprAST : public CExprAST
+class CVarExprAST : public CExprAST
 {
-	std::string m_Name;
+	typedef std::vector<std::pair<std::string, std::unique_ptr<CExprAST>>> VarNamesVector;
+	VarNamesVector m_VarNames;
+	std::unique_ptr<CExprAST> m_Body;
 public:
-	CVariableExprAST(const std::string& s) : m_Name(s) {}
-	virtual llvm::Value *codegen() override;
+	CVarExprAST(VarNamesVector varnames,
+		    std::unique_ptr<CExprAST> body) :
+	m_VarNames(std::move(varnames)),
+	m_Body(std::move(body))
+	{}
+
+	virtual llvm::Value* codegen() override;
 };
 
 #endif

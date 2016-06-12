@@ -9,6 +9,7 @@ set(SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/prototypeast.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/unaryexprast.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/varexprast.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/variableexprast.cpp
 	PARENT_SCOPE
 )
 
@@ -25,5 +26,6 @@ set(HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/prototypeast.hpp
 	${CMAKE_CURRENT_SOURCE_DIR}/unaryexprast.hpp
 	${CMAKE_CURRENT_SOURCE_DIR}/varexprast.hpp
+	${CMAKE_CURRENT_SOURCE_DIR}/variableexprast.hpp
 	PARENT_SCOPE
 )

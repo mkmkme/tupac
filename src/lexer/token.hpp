@@ -14,7 +14,8 @@ enum Token {
 	tIn		= -10,
 	tBinary		= -11,
 	tUnary		= -12,
-	tError		= -13
+	tVar		= -13,
+	tError		= -14
 };
 
 #endif // TOKEN_HPP
