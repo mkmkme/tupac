@@ -45,6 +45,9 @@ int CParser::GetTokenPrecedence() const
 ////////////////////////////////////////////////
 
 
+// expression
+//   ::= unary binoprhs
+//
 std::unique_ptr<CExprAST> CParser::ParseExpression()
 {
 	auto lhs = ParseUnary();
@@ -54,6 +57,7 @@ std::unique_ptr<CExprAST> CParser::ParseExpression()
 	return ParseBinOpRHS(0, std::move(lhs));
 }
 
+// numberexpr ::= number
 std::unique_ptr<CExprAST> CParser::ParseNumber()
 {
 	auto r = std::make_unique<CNumberExprAST>(m_Lexer.GetNumVal());
@@ -61,6 +65,7 @@ std::unique_ptr<CExprAST> CParser::ParseNumber()
 	return std::move(r);
 }
 
+// parenexpr ::= '(' expression ')'
 std::unique_ptr<CExprAST> CParser::ParseParenExpr()
 {
 	GetNextToken(); // eating '('
@@ -74,6 +79,7 @@ std::unique_ptr<CExprAST> CParser::ParseParenExpr()
 	return r;
 }
 
+// ifexpr ::= 'if' expression 'then' expression 'else' expression
 std::unique_ptr<CExprAST> CParser::ParseIfExpr()
 {
 	GetNextToken(); // eating 'if'
@@ -106,6 +112,7 @@ std::unique_ptr<CExprAST> CParser::ParseIfExpr()
 					    std::move(else_));
 }
 
+// forexpr ::= 'for' identifier '=' expr ',' expr (',' expr)? 'in' expression
 std::unique_ptr<CExprAST> CParser::ParseForExpr()
 {
 	GetNextToken(); // eating 'for'
@@ -156,6 +163,9 @@ std::unique_ptr<CExprAST> CParser::ParseForExpr()
 					     std::move(body));
 }
 
+// identifierexpr
+//   ::= identifier
+//   ::= identifier '(' expression* ')'
 std::unique_ptr<CExprAST> CParser::ParseIdentifierExpr()
 {
 	std::string id = m_Lexer.GetIdStr();
@@ -190,6 +200,13 @@ std::unique_ptr<CExprAST> CParser::ParseIdentifierExpr()
 	return std::make_unique<CCallExprAST>(id, std::move(args));
 }
 
+// primary
+//   ::= identifierexpr
+//   ::= numberexpr
+//   ::= parenexpr
+//   ::= ifexpr
+//   ::= forexpr
+//   ::= varexpr
 std::unique_ptr<CExprAST> CParser::ParsePrimary()
 {
 	switch (m_CurrentToken) {
@@ -210,6 +227,9 @@ std::unique_ptr<CExprAST> CParser::ParsePrimary()
 	}
 }
 
+// unary
+//   ::= primary
+//   ::= '!' unary
 std::unique_ptr<CExprAST> CParser::ParseUnary()
 {
 	// If current token is not an operator, it must be a primary expr
@@ -226,6 +246,8 @@ std::unique_ptr<CExprAST> CParser::ParseUnary()
 	return nullptr;
 }
 
+// varexpr ::= 'var' identifier ('=' expression)?
+//                    (',' identifier ('=' expression)?)* 'in' expression
 std::unique_ptr<CExprAST> CParser::ParseVarExpr()
 {
 	GetNextToken(); // eating 'var'
@@ -273,6 +295,8 @@ std::unique_ptr<CExprAST> CParser::ParseVarExpr()
 	return std::make_unique<CVarExprAST>(std::move(varnames), std::move(body));
 }
 
+// binoprhs
+//   ::= ('+' unary)*
 std::unique_ptr<CExprAST> CParser::ParseBinOpRHS(int precedence, std::unique_ptr<CExprAST> lhs)
 {
 	// If this is a binary operation, find its precedence
@@ -306,6 +330,10 @@ std::unique_ptr<CExprAST> CParser::ParseBinOpRHS(int precedence, std::unique_ptr
 	}
 }
 
+// prototype
+//   ::= id '(' id* ')'
+//   ::= binary LETTER number? (id, id)
+//   ::= unary LETTER (id)
 std::unique_ptr<CPrototypeAST> CParser::ParsePrototype()
 {
 	std::string name;
@@ -367,6 +395,7 @@ std::unique_ptr<CPrototypeAST> CParser::ParsePrototype()
 	return std::make_unique<CPrototypeAST>(name, std::move(args), kind != 0, precedence);
 }
 
+// definition ::= 'def' prototype expression
 std::unique_ptr<CFunctionAST> CParser::ParseDefinition()
 {
 	GetNextToken(); // eating "def"
@@ -381,6 +410,7 @@ std::unique_ptr<CFunctionAST> CParser::ParseDefinition()
 	return std::make_unique<CFunctionAST>(std::move(p), std::move(e));
 }
 
+// toplevelexpr ::= expression
 std::unique_ptr<CFunctionAST> CParser::ParseTopLevelExpr()
 {
 	auto e = ParseExpression();
@@ -398,6 +428,7 @@ std::unique_ptr<CFunctionAST> CParser::ParseTopLevelExpr()
 	return std::make_unique<CFunctionAST>(std::move(p), std::move(e));
 }
 
+// external ::= 'extern' prototype
 std::unique_ptr<CPrototypeAST> CParser::ParseExtern()
 {
 	GetNextToken(); // eating "extern"
