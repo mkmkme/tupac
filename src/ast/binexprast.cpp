@@ -21,7 +21,7 @@ llvm::Value* CBinaryExprAST::codegen()
 		if (!var)
 			return LogErrorCodegen("Unknown variable name '%s'\n", lhse->Name());
 
-		m_IR.Builder().CreateStore(val, var);
+        m_Builder.CreateStore(val, var);
 
 		return val;
 	}
@@ -32,14 +32,14 @@ llvm::Value* CBinaryExprAST::codegen()
 
 	switch (m_Operation) {
 	case '+':
-		return m_IR.Builder().CreateFAdd(l, r, "addtmp");
+        return m_Builder.CreateFAdd(l, r, "addtmp");
 	case '-':
-		return m_IR.Builder().CreateFSub(l, r, "subtmp");
+        return m_Builder.CreateFSub(l, r, "subtmp");
 	case '*':
-		return m_IR.Builder().CreateFMul(l, r, "multmp");
+        return m_Builder.CreateFMul(l, r, "multmp");
 	case '<':
-		l = m_IR.Builder().CreateFCmpULT(l, r, "cmptmp");
-		return m_IR.Builder().CreateUIToFP(l, llvm::Type::getDoubleTy(m_IR.Context()),
+        l = m_Builder.CreateFCmpULT(l, r, "cmptmp");
+        return m_Builder.CreateUIToFP(l, llvm::Type::getDoubleTy(m_IR.Context()),
 									  "booltmp");
 	default:
 		break;
@@ -52,6 +52,6 @@ llvm::Value* CBinaryExprAST::codegen()
 		return LogErrorCodegen("Binary operator '%c' not found\n", m_Operation);
 
 	llvm::Value* ops[2] = { l, r };
-	return m_IR.Builder().CreateCall(f, ops, "binop");
+    return m_Builder.CreateCall(f, ops, "binop");
 }
 

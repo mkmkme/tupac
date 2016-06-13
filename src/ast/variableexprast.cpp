@@ -10,5 +10,5 @@ llvm::Value *CVariableExprAST::codegen()
 			return LogErrorCodegen("Unrecognized variable name: %s", m_Name.c_str());
 
 	// Load the value
-	return m_IR.Builder().CreateLoad(v, m_Name.c_str());
+    return m_Builder.CreateLoad(v, m_Name.c_str());
 }

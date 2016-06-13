@@ -24,5 +24,5 @@ llvm::Value* CCallExprAST::codegen()
 	}
 
 
-	return m_IR.Builder().CreateCall(callee, args, "calltmp");
+    return m_Builder.CreateCall(callee, args, "calltmp");
 }

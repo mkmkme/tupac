@@ -7,11 +7,11 @@ llvm::Value *CIfExprAST::codegen()
 		return nullptr;
 
 	// Converting condition to a bool by comparing with 0.
-	condv = m_IR.Builder().CreateFCmpONE(condv,
+    condv = m_Builder.CreateFCmpONE(condv,
 					     llvm::ConstantFP::get(m_IR.Context(), llvm::APFloat(0.)),
 					     "ifcond");
 
-	llvm::Function* func = m_IR.Builder().GetInsertBlock()->getParent();
+    llvm::Function* func = m_Builder.GetInsertBlock()->getParent();
 
 	// Create blocks for then and else. Insert them in the end of the func
 	llvm::BasicBlock* thenbb = llvm::BasicBlock::Create(m_IR.Context(),
@@ -22,35 +22,35 @@ llvm::Value *CIfExprAST::codegen()
 	llvm::BasicBlock* mergebb = llvm::BasicBlock::Create(m_IR.Context(),
 							     "ifcont");
 
-	m_IR.Builder().CreateCondBr(condv, thenbb, elsebb);
+    m_Builder.CreateCondBr(condv, thenbb, elsebb);
 
 	// Emit 'then' value
-	m_IR.Builder().SetInsertPoint(thenbb);
+    m_Builder.SetInsertPoint(thenbb);
 
 	llvm::Value* thenv = m_Then->codegen();
 	if (!thenv)
 		return nullptr;
 
-	m_IR.Builder().CreateBr(mergebb);
+    m_Builder.CreateBr(mergebb);
 	// Codegen for 'then' can change the current block, update thenbb for the PHI
-	thenbb = m_IR.Builder().GetInsertBlock();
+    thenbb = m_Builder.GetInsertBlock();
 
 	// Emit 'else' block
 	func->getBasicBlockList().push_back(elsebb);
-	m_IR.Builder().SetInsertPoint(elsebb);
+    m_Builder.SetInsertPoint(elsebb);
 
 	llvm::Value* elsev = m_Else->codegen();
 	if (!elsev)
 		return nullptr;
 
-	m_IR.Builder().CreateBr(mergebb);
+    m_Builder.CreateBr(mergebb);
 	// codegen for 'else' can change the current block, update elsebb for the PHI
-	elsebb = m_IR.Builder().GetInsertBlock();
+    elsebb = m_Builder.GetInsertBlock();
 
 	// Emit merge block
 	func->getBasicBlockList().push_back(mergebb);
-	m_IR.Builder().SetInsertPoint(mergebb);
-	llvm::PHINode* phi = m_IR.Builder().CreatePHI(llvm::Type::getDoubleTy(m_IR.Context()),
+    m_Builder.SetInsertPoint(mergebb);
+    llvm::PHINode* phi = m_Builder.CreatePHI(llvm::Type::getDoubleTy(m_IR.Context()),
 						      2,
 						      "iftmp");
 

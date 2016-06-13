@@ -5,7 +5,7 @@ llvm::Value *CVarExprAST::codegen()
 {
 	std::vector<llvm::AllocaInst*> oldbindings;
 
-	llvm::Function* func = m_IR.Builder().GetInsertBlock()->getParent();
+    llvm::Function* func = m_Builder.GetInsertBlock()->getParent();
 
 	// Register all variables and emit their initializers
 	for (const auto& varpair : m_VarNames) {
@@ -27,7 +27,7 @@ llvm::Value *CVarExprAST::codegen()
 		}
 
 		llvm::AllocaInst* alloca = m_IR.CreateEntryBlockAlloca(func, varname);
-		m_IR.Builder().CreateStore(initv, alloca);
+        m_Builder.CreateStore(initv, alloca);
 
 		// Remember the old var binding so that we can restore the
 		// binding when unrecurse

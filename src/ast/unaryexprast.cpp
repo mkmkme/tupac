@@ -11,5 +11,5 @@ llvm::Value *CUnaryExprAST::codegen()
 	if (!f)
 		return LogErrorCodegen("Unknown unary operator '%c'\n", m_OpCode);
 
-	return m_IR.Builder().CreateCall(f, operandv, "unop");
+    return m_Builder.CreateCall(f, operandv, "unop");
 }
