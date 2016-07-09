@@ -10,12 +10,12 @@ class IAbstractAST
 protected:
 
 	CIR& m_IR;
-    llvm::IRBuilder<>& m_Builder;
+	llvm::IRBuilder<>& m_Builder;
 public:
-    IAbstractAST() :
-        m_IR(CGlobals::IR()),
-        m_Builder(m_IR.Builder())
-        {}
+	IAbstractAST() :
+	m_IR(CGlobals::IR()),
+	m_Builder(m_IR.Builder())
+	{}
 	virtual ~IAbstractAST() {}
 };
 

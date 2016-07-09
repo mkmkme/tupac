@@ -19,7 +19,7 @@ llvm::Function *CFunctionAST::codegen()
 
 	// Create a new basic block to start insertion into
 	auto* bb = llvm::BasicBlock::Create(m_IR.Context(), "entry", f);
-    m_Builder.SetInsertPoint(bb);
+	m_Builder.SetInsertPoint(bb);
 
 	// Record the function arguments in the map
 	m_IR.NamedValues().clear();
@@ -27,7 +27,7 @@ llvm::Function *CFunctionAST::codegen()
 		llvm::AllocaInst* alloca = m_IR.CreateEntryBlockAlloca(f, a.getName());
 
 		// Store the initial value into the alloca
-        m_Builder.CreateStore(&a, alloca);
+		m_Builder.CreateStore(&a, alloca);
 
 		// Add arguments to variable symbol table
 		m_IR.NamedValues()[a.getName()] = alloca;
@@ -36,7 +36,7 @@ llvm::Function *CFunctionAST::codegen()
 	auto* r = m_Body->codegen();
 	if (r) {
 		// Finish off the function
-        m_Builder.CreateRet(r);
+		m_Builder.CreateRet(r);
 
 		// Validate the generated code, checking for consistency
 		llvm::verifyFunction(*f);

@@ -20,7 +20,7 @@ llvm::Value *CForExprAST::codegen()
 {
 	// Make new basic block for the loop header, inserting after current
 	// block
-    llvm::Function* func = m_Builder.GetInsertBlock()->getParent();
+	llvm::Function* func = m_Builder.GetInsertBlock()->getParent();
 	// Create an alloca for the var in entry block
 	llvm::AllocaInst* alloca = m_IR.CreateEntryBlockAlloca(func, m_VarName);
 
@@ -30,7 +30,7 @@ llvm::Value *CForExprAST::codegen()
 		return nullptr;
 
 	// Store the var in alloca
-    m_Builder.CreateStore(startv, alloca);
+	m_Builder.CreateStore(startv, alloca);
 
 	// Make the new basic block for the loop header, inserting after current block
 	llvm::BasicBlock* loopbb = llvm::BasicBlock::Create(m_IR.Context(),
@@ -38,10 +38,10 @@ llvm::Value *CForExprAST::codegen()
 							    func);
 
 	// Insert an explicit fall through from the current block to the loopbb
-    m_Builder.CreateBr(loopbb);
+	m_Builder.CreateBr(loopbb);
 
 	// Start insertion in loopbb
-    m_Builder.SetInsertPoint(loopbb);
+	m_Builder.SetInsertPoint(loopbb);
 
 	// Within the loop, the var is defined equal to the PHI node.
 	// If it shadows an existing var, we need to restore it, so save it now
@@ -72,12 +72,12 @@ llvm::Value *CForExprAST::codegen()
 
 	// Reload, increment and restore the alloca. This handles the case where
 	// the body of the loop mutates the var
-    llvm::Value* curv = m_Builder.CreateLoad(alloca, m_VarName.c_str());
-    llvm::Value* nextv = m_Builder.CreateFAdd(curv, stepv, "nextvar");
-    m_Builder.CreateStore(nextv, alloca);
+	llvm::Value* curv = m_Builder.CreateLoad(alloca, m_VarName.c_str());
+	llvm::Value* nextv = m_Builder.CreateFAdd(curv, stepv, "nextvar");
+	m_Builder.CreateStore(nextv, alloca);
 
 	// Convert condition to bool using double
-    endv = m_Builder.CreateFCmpONE(endv,
+	endv = m_Builder.CreateFCmpONE(endv,
 					    llvm::ConstantFP::get(m_IR.Context(), llvm::APFloat(0.)),
 					    "loopcond");
 
@@ -87,10 +87,10 @@ llvm::Value *CForExprAST::codegen()
 							     func);
 
 	// Insert the conditional branch into the end of loopbb
-    m_Builder.CreateCondBr(endv, loopbb, afterbb);
+	m_Builder.CreateCondBr(endv, loopbb, afterbb);
 
 	// Any new code will be inserted in afterbb
-    m_Builder.SetInsertPoint(afterbb);
+	m_Builder.SetInsertPoint(afterbb);
 
 	// Restore the unshadowed variable
 	if (oldv)
